@@ -1,0 +1,5 @@
+cd /d D:\Judge0
+docker-compose up --build
+docker-compose down
+ctrl + C
+curl http://localhost:2358/languages
