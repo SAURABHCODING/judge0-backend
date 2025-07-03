@@ -1,5 +1,14 @@
-cd /d D:\Judge0
-docker-compose up --build
-docker-compose down
-ctrl + C
-curl http://localhost:2358/languages
+#!/bin/bash
+# Run Judge0 API server inside container
+
+source ./scripts/load-config
+export | sudo tee /api/environment
+
+for i in $(seq 1 $RESTART_MAX_TRIES); do
+    [[ -f tmp/pids/server.pid ]] && rm -f tmp/pids/server.pid
+
+    rails db:create db:migrate db:seed
+    rails s -b 0.0.0.0
+    [[ $? -eq 0 ]] && break
+    sleep 2s
+done
