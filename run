@@ -1,5 +1,11 @@
 #!/bin/sh
 set -e
 
+# Move to app root
+cd /app
+
+# Setup the database and seed
 bundle exec rails db:create db:migrate db:seed
+
+# Start the Rails server bound to 0.0.0.0
 exec bundle exec rails s -b 0.0.0.0
