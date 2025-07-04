@@ -25,8 +25,8 @@ RUN gem install bundler && bundle install
 # Set permissions for tmp and log directories
 RUN mkdir -p tmp log && chmod -R 777 tmp log
 
-# Expose port for API
+# Expose port for Railway (must match settings)
 EXPOSE 3000
 
-# Default command to run
+# Start the Rails server on Railway-compatible port
 CMD ["bundle", "exec", "rails", "server", "-p", "3000", "-b", "0.0.0.0"]
