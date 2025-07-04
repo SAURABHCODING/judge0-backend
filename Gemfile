@@ -16,6 +16,6 @@ gem 'resque-scheduler', '~> 4.10'
 gem 'will_paginate', '~> 3.2'
 
 group :development do
-  gem 'annotate', '~> 3.0'
-  gem 'listen', '~> 3.2'
+ gem 'pry'
+ gem 'pry-byebug'
 end
