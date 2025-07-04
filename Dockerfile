@@ -1,52 +1,32 @@
-FROM judge0/compilers:1.4.0 AS production
+# ✅ Dockerfile for Judge0-compatible API (Railway-ready)
+FROM ruby:3.2
 
-ENV JUDGE0_HOMEPAGE "https://judge0.com"
-LABEL homepage=$JUDGE0_HOMEPAGE
+# Set environment variables
+ENV GEM_HOME="/usr/local/bundle"
+ENV PATH="$GEM_HOME/bin:$PATH"
 
-ENV JUDGE0_SOURCE_CODE "https://github.com/judge0/judge0"
-LABEL source_code=$JUDGE0_SOURCE_CODE
+# Set working directory
+WORKDIR /app
 
-ENV JUDGE0_MAINTAINER "Herman Zvonimir Došilović <hermanz.dosilovic@gmail.com>"
-LABEL maintainer=$JUDGE0_MAINTAINER
-
-ENV PATH "/usr/local/ruby-2.7.0/bin:/opt/.gem/bin:$PATH"
-ENV GEM_HOME "/opt/.gem/"
-
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-      cron \
-      libpq-dev \
-      sudo && \
-    rm -rf /var/lib/apt/lists/* && \
-    echo "gem: --no-document" > /root/.gemrc && \
-    gem install bundler:2.1.4 && \
-    npm install -g --unsafe-perm aglio@2.3.0
-
-EXPOSE 2358
-
-WORKDIR /api
-
-COPY Gemfile* ./
-RUN RAILS_ENV=production bundle
-
-COPY cron /etc/cron.d
-RUN cat /etc/cron.d/* | crontab -
-
+# Copy all files
 COPY . .
 
-ENTRYPOINT ["/api/docker-entrypoint.sh"]
-CMD ["/api/scripts/server"]
+# Install required Linux packages
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    sudo \
+    nodejs \
+    npm \
+    cron && rm -rf /var/lib/apt/lists/*
 
-RUN useradd -u 1000 -m -r judge0 && \
-    echo "judge0 ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers && \
-    chown judge0: /api/tmp/
+# Install Ruby dependencies
+RUN gem install bundler && bundle install
 
-USER judge0
+# Set permissions for tmp and log directories
+RUN mkdir -p tmp log && chmod -R 777 tmp log
 
-ENV JUDGE0_VERSION "1.13.1"
-LABEL version=$JUDGE0_VERSION
+# Expose port for API
+EXPOSE 3000
 
-
-FROM production AS development
-
-CMD ["sleep", "infinity"]
+# Default command to run
+CMD ["bundle", "exec", "rails", "server", "-p", "3000", "-b", "0.0.0.0"]
