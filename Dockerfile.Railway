@@ -1,0 +1,18 @@
+# Railway single-container Judge0 CE setup
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install basic dependencies
+RUN apt-get update && apt-get install -y \
+    curl wget unzip docker.io docker-compose-plugin sudo
+
+# Download Judge0 CE pre-built release
+RUN wget -q https://github.com/judge0/judge0/releases/download/v1.13.1/judge0-v1.13.1.zip \
+ && unzip judge0-v1.13.1.zip && mv judge0-v1.13.1/* . && rm -rf judge0-v1.13.1*
+
+# Embed judge0.conf (optional override)
+COPY judge0.conf ./judge0.conf
+
+# Run docker-compose inside container
+CMD ["docker-compose", "up", "--build"]
