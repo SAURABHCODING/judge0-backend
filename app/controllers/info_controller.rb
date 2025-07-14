@@ -1,6 +1,10 @@
 class InfoController < ApplicationController
-  @@license ||= File.read("LICENSE")
-  @@isolate ||= `isolate --version`
+  @@license ||= File.read("LICENSE") rescue "License file not found"
+  begin
+    @@isolate ||= `isolate --version`.strip
+  rescue => e
+    @@isolate ||= "Isolate not available"
+  end
 
   def system_info
     render json: SystemInfo.sys_info
