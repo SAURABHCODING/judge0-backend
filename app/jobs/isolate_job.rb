@@ -1,13 +1,14 @@
 class IsolateJob < ApplicationJob
   retry_on RuntimeError, wait: 0.1.seconds, attempts: 100
 
-  queue_as ENV["JUDGE0_VERSION"].to_sym
+  queue_as (ENV["JUDGE0_VERSION"]&.to_sym || :default)
 
   STDIN_FILE_NAME = "stdin.txt"
   STDOUT_FILE_NAME = "stdout.txt"
   STDERR_FILE_NAME = "stderr.txt"
   METADATA_FILE_NAME = "metadata.txt"
   ADDITIONAL_FILES_ARCHIVE_FILE_NAME = "additional_files.zip"
+
 
   attr_reader :submission, :cgroups,
               :box_id, :workdir, :boxdir, :tmpdir,
