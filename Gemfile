@@ -17,5 +17,5 @@ gem 'will_paginate', '~> 3.2'
 
 group :development do
  gem 'pry'
- gem 'pry-byebug'
+
 end
